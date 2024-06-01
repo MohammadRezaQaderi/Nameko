@@ -1,22 +1,23 @@
 import uuid
 from nameko.rpc import rpc
-from nameko_redis import Redis
+import psycopg2
+import redis
 
 
 class AirportsService:
-    name = "trips_service"
-    redis = Redis('development')
+    name = "airports_service"
+
+    def __init__(self):
+        self.db_conn = psycopg2.connect("dbname=service1_db user=service1_user password=service1_pass host=service1_db")
+        self.redis_conn = redis.StrictRedis(host='service1_redis', port=6379, db=0)
 
     @rpc
-    def get(self, trip_id):
-        trip = self.redis.get(trip_id)
-        return trip
+    def get(self, airport_id):
+        airport = self.redis_conn.get(airport_id)
+        return airport
 
     @rpc
-    def create(self, airport_from_id, airport_to_id):
-        trip_id = uuid.uuid4().hex
-        self.redis.set(trip_id, {
-            "from": airport_from_id,
-            "to": airport_to_id
-        })
-        return trip_id
+    def create(self, airport):
+        airport_id = uuid.uuid4().hex
+        self.redis_conn.set(airport_id, airport)
+        return airport_id
