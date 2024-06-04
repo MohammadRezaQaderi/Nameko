@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app/service
 
-CMD ["nameko", "run", "--config", "./config.yaml", "service1"]
+CMD ["nameko", "run", "--config", "config.yaml", "service1"]
