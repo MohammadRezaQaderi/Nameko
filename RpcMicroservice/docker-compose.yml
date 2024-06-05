@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  service1:
+    build: ./Service
+    container_name: service1
+    depends_on:
+      - rabbitmq
+    environment:
+      AMQP_URI: 'pyamqp://guest:guest@rabbitmq'
+    volumes:
+      - ./Service:/app
+    command: ["nameko", "run", "--config", "/app/config.yaml", "service1"]
+
+  postgres:
+    image: postgres:latest
+    container_name: service1_db
+    environment:
+      POSTGRES_DB: service1_db
+      POSTGRES_USER: service1_user
+      POSTGRES_PASSWORD: service1_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:latest
+    container_name: service1_redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:

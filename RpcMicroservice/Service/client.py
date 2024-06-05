@@ -3,8 +3,10 @@ from datetime import datetime
 
 
 class ServiceClient:
-    def __init__(self, config):
-        self.config = config
+    def __init__(self):
+        self.config = {
+            'AMQP_URI': 'pyamqp://guest:guest@localhost'
+        }
 
     def call_hello(self, phone):
         with ClusterRpcProxy(self.config) as rpc:
@@ -24,9 +26,6 @@ class ServiceClient:
 
 
 if __name__ == "__main__":
-    config = {
-        'AMQP_URI': "pyamqp://guest:guest@rabbitmq"
-    }
-    client = ServiceClient(config)
-    client.call_hello('1234567890')  # Example phone number
+    client = ServiceClient()
+    client.call_hello('9876543210')  # Example phone number
     client.call_create('9876543210', 'success')  # Example phone number and status

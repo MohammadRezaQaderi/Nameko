@@ -8,11 +8,22 @@ class Service1:
     name = "service1"
 
     def __init__(self):
-        self.db_conn = psycopg2.connect("dbname=service1_db user=service1_user password=service1_pass host=service1_db")
+        self.db_conn = self.connect_to_database()
         self.redis_conn = redis.StrictRedis(host='service1_redis', port=6379, db=0)
 
         # Create table if it does not exist
         self.create_table()
+
+    def connect_to_database(self):
+        try:
+            return psycopg2.connect("dbname=service1_db user=service1_user password=service1_pass host=service1_db")
+        except psycopg2.OperationalError:
+            # Database does not exist, create it
+            conn = psycopg2.connect("dbname=postgres user=service1_user password=service1_pass host=service1_db")
+            conn.autocommit = True
+            with conn.cursor() as cursor:
+                cursor.execute("CREATE DATABASE service1_db")
+            return psycopg2.connect("dbname=service1_db user=service1_user password=service1_pass host=service1_db")
 
     def create_table(self):
         create_table_query = """

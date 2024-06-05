@@ -1,2 +1,0 @@
-#AMQP_URI: 'pyamqp://optionz:!QAZxsw2#EDC@172.16.42.11:5672/%2Foptionz'
-AMQP_URI: 'pyamqp://guest:guest@rabbitmq'
