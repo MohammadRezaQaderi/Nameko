@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package user;
+
+service UserService {
+    rpc AddUserPhone (UserRequest) returns (UserResponse);
+    rpc GetUserPhone (UserIdRequest) returns (UserResponse);
+}
+
+message UserRequest {
+    string user_id = 1;
+    string phone = 2;
+    string status = 3;
+}
+
+message UserIdRequest {
+    string user_id = 1;
+}
+
+message UserResponse {
+    string message = 1;
+    bool success = 2;
+}

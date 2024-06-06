@@ -1,8 +1,87 @@
-version: '3'
+version: '3.8'
+
 services:
+  service1:
+    build:
+      context: ./microservice1
+      dockerfile: Dockerfile
+    container_name: service1
+    ports:
+      - "8001:8000"
+    environment:
+      - AMQP_URI=pyamqp://guest:guest@rabbitmq
+      - DB_URI=postgresql://service1_user:service1_pass@service1_db:5432/service1_db
+      - REDIS_URI=redis://service1_redis:6379/0
+    depends_on:
+      - rabbitmq
+      - service1_db
+      - service1_redis
+
+  service1_db:
+    image: postgres:13
+    container_name: service1_db
+    environment:
+      POSTGRES_DB: service1_db
+      POSTGRES_USER: service1_user
+      POSTGRES_PASSWORD: service1_pass
+    ports:
+      - "5433:5432"
+
+  service1_redis:
+    image: redis:6
+    container_name: service1_redis
+    ports:
+      - "6381:6379"
+
+  service2:
+    build:
+      context: ./microservice2
+      dockerfile: Dockerfile
+    container_name: service2
+    ports:
+      - "8002:8000"
+    environment:
+      - AMQP_URI=pyamqp://guest:guest@rabbitmq
+      - DB_URI=postgresql://service2_user:service2_pass@service2_db:5432/service2_db
+      - REDIS_URI=redis://service2_redis:6379/0
+    depends_on:
+      - rabbitmq
+      - service2_db
+      - service2_redis
+
+  service2_db:
+    image: postgres:13
+    container_name: service2_db
+    environment:
+      POSTGRES_DB: service2_db
+      POSTGRES_USER: service2_user
+      POSTGRES_PASSWORD: service2_pass
+    ports:
+      - "5434:5432"
+
+  service2_redis:
+    image: redis:6
+    container_name: service2_redis
+    ports:
+      - "6382:6379"
+
   gateway:
-    build: ./gateway
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    container_name: gateway
     ports:
       - "8000:8000"
-  products:
-    build: ./products
+    environment:
+      - AMQP_URI=pyamqp://guest:guest@rabbitmq
+    depends_on:
+      - rabbitmq
+      - service1
+      - service2
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"

@@ -1,5 +1,0 @@
-nameko
-nameko-grpc
-grpcio
-grpcio-tools
-protobuf

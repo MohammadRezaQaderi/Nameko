@@ -1,5 +1,3 @@
-nameko
-nameko-grpc
-grpcio
-grpcio-tools
-protobuf
+nameko==3.0.0rc9
+grpcio==1.37.0
+grpcio-tools==1.37.0
