@@ -1,0 +1,2 @@
+AMQP_URI: 'pyamqp://guest:guest@localhost'
+GRPC_PORT: 50051

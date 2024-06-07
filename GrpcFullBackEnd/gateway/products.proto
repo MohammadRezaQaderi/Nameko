@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+package gateway;
+
+import "service1.proto";
