@@ -6,6 +6,7 @@ COPY ../protos /app/protos
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install grpcio grpcio-tools nameko
 
 # Generate gRPC code
 RUN python -m grpc_tools.protoc -I./protos --python_out=. --grpc_python_out=. ./protos/service1.proto

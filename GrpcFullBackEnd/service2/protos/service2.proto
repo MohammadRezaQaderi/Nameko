@@ -3,11 +3,26 @@ syntax = "proto3";
 package service2;
 
 service Service2 {
-  rpc AnotherFunction (Request) returns (Response);
+  rpc AnotherFunction(Request) returns (Response);
+  rpc InsertStatus(StatusRequest) returns (Response);
+  rpc GetStatus(StatusQuery) returns (StatusResponse);
 }
 
 message Request {
   string parameter = 1;
+}
+
+message StatusRequest {
+  string phone = 1;
+  string status = 2;
+}
+
+message StatusQuery {
+  string phone = 1;
+}
+
+message StatusResponse {
+  string status = 1;
 }
 
 message Response {

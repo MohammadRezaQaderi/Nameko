@@ -9,6 +9,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Generate gRPC code
 RUN python -m grpc_tools.protoc -I./protos --python_out=. --grpc_python_out=. ./protos/service2.proto
-RUN python -m grpc_tools.protoc -I./protos --python_out=. --grpc_python_out=. ./protos/service1.proto
 
 CMD ["python", "service.py"]
