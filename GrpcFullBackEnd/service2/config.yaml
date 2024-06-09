@@ -1,0 +1,3 @@
+AMQP_URI: 'pyamqp://guest:guest@rabbitmq'
+DB_URI: 'postgresql://service2_user:service2_pass@service2_db:5432/service2_db'
+REDIS_URI: 'redis://service2_redis:6379/0'

@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package service2;
+
+service Service2 {
+  rpc AnotherFunction (Request) returns (Response);
+}
+
+message Request {
+  string parameter = 1;
+}
+
+message Response {
+  string result = 1;
+}

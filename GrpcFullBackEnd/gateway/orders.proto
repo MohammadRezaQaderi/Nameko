@@ -1,5 +1,0 @@
-syntax = "proto3";
-
-package gateway;
-
-import "service2.proto";
