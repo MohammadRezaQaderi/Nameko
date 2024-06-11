@@ -1,0 +1,19 @@
+curl -X POST http://localhost:8000/service1/insert-users \
+-H "Content-Type: application/json" \
+-d '{
+  "message": "send this to users",
+  "users": [
+    {"name": "mgh27", "national_id": "0480959838", "phone": "09216272502"},
+    {"name": "ali", "national_id": "1234567897", "phone": "09216272520"}
+  ]
+}'
+
+curl -X POST http://localhost:8080/service1/get-users-by-national-id \
+-H "Content-Type: application/json" \
+-d '{
+  "national_id": "0480959838"
+}'
+
+
+
+docker-compose up --build -d

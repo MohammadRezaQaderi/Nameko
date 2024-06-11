@@ -6,6 +6,7 @@ import service1_pb2
 import service1_pb2_grpc
 import service2_pb2
 import service2_pb2_grpc
+from datetime import datetime
 
 
 class Service1(service1_pb2_grpc.Service1Servicer):
@@ -26,12 +27,16 @@ class Service1(service1_pb2_grpc.Service1Servicer):
 
     def create_table(self):
         create_table_query = """
-    CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        name VARCHAR(40),
-        phone VARCHAR(12)
-    );
-    """
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(40),
+            national_id VARCHAR(20),
+            phone VARCHAR(12),
+            message TEXT,
+            status BOOLEAN,
+            dc_sent_time TIMESTAMP
+        );
+        """
         with self.db_conn.cursor() as cursor:
             cursor.execute(create_table_query)
             self.db_conn.commit()
@@ -44,15 +49,24 @@ class Service1(service1_pb2_grpc.Service1Servicer):
     def InsertUsers(self, request, context):
         with self.db_conn.cursor() as cursor:
             for user in request.users:
-                cursor.execute("INSERT INTO users (id, name, phone) VALUES (%s, %s, %s)",
-                               (user.id, user.name, user.phone))
+                cursor.execute(
+                    "INSERT INTO users (name, national_id, phone, message, status, dc_sent_time) VALUES (%s, %s, %s, %s, %s, %s)",
+                    (user.name, user.national_id, user.phone, request.message, True, datetime.now())
+                )
                 # Call Service2's InsertStatus method
-                with grpc.insecure_channel('service2:50052') as channel:
-                    stub = service2_pb2_grpc.Service2Stub(channel)
-                    status_request = service2_pb2.StatusRequest(phone=user.phone, status="OK")
-                    stub.InsertStatus(status_request)
+                # with grpc.insecure_channel('service2:50052') as channel:
+                #     stub = service2_pb2_grpc.Service2Stub(channel)
+                #     status_request = service2_pb2.StatusRequest(phone=user.phone, status="OK")
+                #     stub.InsertStatus(status_request)
             self.db_conn.commit()
         return service1_pb2.Response(result="Users inserted and status updated successfully")
+
+    def GetUsersByNationalId(self, request, context):
+        with self.db_conn.cursor() as cursor:
+            cursor.execute("SELECT name, national_id, phone, message FROM users WHERE national_id = %s", (request.national_id,))
+            rows = cursor.fetchall()
+            users = [service1_pb2.User(name=row[0], national_id=row[1], phone=row[2], message=row[3]) for row in rows]
+        return service1_pb2.UserList(users=users)
 
 
 def serve():

@@ -6,7 +6,6 @@ import service2_pb2
 import service2_pb2_grpc
 import json
 
-
 class GatewayService:
     name = "gateway_service"
 
@@ -21,6 +20,12 @@ class GatewayService:
         data = json.loads(request.get_data(as_text=True))
         response = self.call_service1_insert_users(data)
         return 200, json.dumps({'result': response.result})
+
+    @http('POST', '/service1/get-users-by-national-id')
+    def handle_service1_get_users_by_national_id(self, request):
+        data = json.loads(request.get_data(as_text=True))
+        response = self.call_service1_get_users_by_national_id(data)
+        return 200, json.dumps({'users': [{'name': user.name, 'national_id': user.national_id, 'phone': user.phone, 'message': user.message} for user in response.users]})
 
     @http('POST', '/service2/another-function')
     def handle_service2_another_function(self, request):
@@ -50,10 +55,19 @@ class GatewayService:
     def call_service1_insert_users(self, data):
         with grpc.insecure_channel('service1:50051') as channel:
             stub = service1_pb2_grpc.Service1Stub(channel)
-            users = [service1_pb2.User(id=user['id'], name=user['name'], phone=user['phone']) for user in
-                     data['users']]
-            grpc_request = service1_pb2.UserRequest(users=users)
+            users = [
+                service1_pb2.User(name=user['name'], national_id=user['national_id'], phone=user['phone'])
+                for user in data['users']
+            ]
+            grpc_request = service1_pb2.UserRequest(message=data['message'], users=users)
             grpc_response = stub.InsertUsers(grpc_request)
+            return grpc_response
+
+    def call_service1_get_users_by_national_id(self, data):
+        with grpc.insecure_channel('service1:50051') as channel:
+            stub = service1_pb2_grpc.Service1Stub(channel)
+            grpc_request = service1_pb2.NationalIdRequest(national_id=data['national_id'])
+            grpc_response = stub.GetUsersByNationalId(grpc_request)
             return grpc_response
 
     def call_service2_another_function(self, data):

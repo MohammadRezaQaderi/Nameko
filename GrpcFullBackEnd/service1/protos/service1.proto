@@ -5,6 +5,7 @@ package service1;
 service Service1 {
   rpc SomeFunction(Request) returns (Response);
   rpc InsertUsers(UserRequest) returns (Response);
+  rpc GetUsersByNationalId(NationalIdRequest) returns (UserList);
 }
 
 message Request {
@@ -12,15 +13,25 @@ message Request {
 }
 
 message UserRequest {
-  repeated User users = 1;
+  string message = 1;
+  repeated User users = 2;
 }
 
 message User {
-  int32 id = 1;
-  string name = 2;
+  string name = 1;
+  string national_id = 2;
   string phone = 3;
+  string message = 4;
 }
 
 message Response {
   string result = 1;
+}
+
+message NationalIdRequest {
+  string national_id = 1;
+}
+
+message UserList {
+  repeated User users = 1;
 }
