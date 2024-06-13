@@ -1,11 +1,10 @@
 import psycopg2
-import redis, time
+import redis
+import time
 from concurrent import futures
 import grpc
 import service1_pb2
 import service1_pb2_grpc
-import service2_pb2
-import service2_pb2_grpc
 from datetime import datetime
 
 
@@ -22,7 +21,7 @@ class Service1(service1_pb2_grpc.Service1Servicer):
                 return psycopg2.connect(
                     "dbname=service2_db user=service2_user password=service2_pass host=service2_db")
             except psycopg2.OperationalError:
-                time.sleep(5)  # Wait for 5 seconds before retrying
+                time.sleep(5)
         raise Exception("Could not connect to the database after several attempts")
 
     def create_table(self):
@@ -53,17 +52,13 @@ class Service1(service1_pb2_grpc.Service1Servicer):
                     "INSERT INTO users (name, national_id, phone, message, status, dc_sent_time) VALUES (%s, %s, %s, %s, %s, %s)",
                     (user.name, user.national_id, user.phone, request.message, True, datetime.now())
                 )
-                # Call Service2's InsertStatus method
-                # with grpc.insecure_channel('service2:50052') as channel:
-                #     stub = service2_pb2_grpc.Service2Stub(channel)
-                #     status_request = service2_pb2.StatusRequest(phone=user.phone, status="OK")
-                #     stub.InsertStatus(status_request)
             self.db_conn.commit()
         return service1_pb2.Response(result="Users inserted and status updated successfully")
 
     def GetUsersByNationalId(self, request, context):
         with self.db_conn.cursor() as cursor:
-            cursor.execute("SELECT name, national_id, phone, message FROM users WHERE national_id = %s", (request.national_id,))
+            cursor.execute("SELECT name, national_id, phone, message FROM users WHERE national_id = %s",
+                           (request.national_id,))
             rows = cursor.fetchall()
             users = [service1_pb2.User(name=row[0], national_id=row[1], phone=row[2], message=row[3]) for row in rows]
         return service1_pb2.UserList(users=users)
