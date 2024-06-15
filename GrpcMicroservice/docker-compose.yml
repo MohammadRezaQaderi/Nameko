@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  notif_service:
+    ports:
+      - "50051:50051"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    depends_on:
+      - rabbitmq
+    environment:
+      - AMQP_URI=pyamqp://guest:guest@rabbitmq
