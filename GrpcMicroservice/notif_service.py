@@ -1,6 +1,6 @@
 from nameko.rpc import rpc
 from nameko_grpc.entrypoint import Grpc
-from notif_pb2 import ExampleReply
+from notif_pb2 import ExampleReply, MessageToUsersReply
 from notif_pb2_grpc import exampleStub
 
 grpc = Grpc.implementing(exampleStub)
@@ -34,3 +34,9 @@ class NotifService:
         for index, req in enumerate(request):
             message = req.value * (req.multiplier or 1)
             yield ExampleReply(message=message, seqno=index + 1)
+
+    @grpc
+    def SendMessageToUsers(self, request, context):
+        for user in request.users:
+            print(f"Sending message '{request.message}' to {user.name} with national ID {user.nationalid}")
+        return MessageToUsersReply(status='Messages sent successfully')

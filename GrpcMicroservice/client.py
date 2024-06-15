@@ -24,5 +24,14 @@ def run():
     for response in responses:
         print(response)
 
+    users = [
+        notif_pb2.User(name='John Doe', nationalid='123456789'),
+        notif_pb2.User(name='Jane Doe', nationalid='987654321')
+    ]
+    request = notif_pb2.MessageToUsersRequest(message='Hello, users!', users=users)
+
+    # Call the SendMessageToUsers method
+    response = stub.SendMessageToUsers(request)
+    print("Response from SendMessageToUsers: ", response.status)
 if __name__ == '__main__':
     run()
