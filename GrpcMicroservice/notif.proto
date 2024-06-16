@@ -2,27 +2,24 @@ syntax = "proto3";
 
 package nameko;
 
-service example {
-  rpc unary_unary (ExampleRequest) returns (ExampleReply) {}
-  rpc unary_stream (ExampleRequest) returns (stream ExampleReply) {}
-  rpc stream_unary (stream ExampleRequest) returns (ExampleReply) {}
-  rpc stream_stream (stream ExampleRequest) returns (stream ExampleReply) {}
+service notif {
   rpc SendMessageToUsers (MessageToUsersRequest) returns (MessageToUsersReply) {}
-}
-
-message ExampleRequest {
-  string value = 1;
-  int32 multiplier = 2;
-}
-
-message ExampleReply {
-  string message = 1;
-  int32 seqno = 2;
+  rpc GetUsersByNationalId(NationalIdRequest) returns (UserList) {}
 }
 
 message User {
   string name = 1;
-  string nationalid = 2;
+  string national_id = 2;
+  string phone = 3;
+  string message = 4;
+}
+
+message NationalIdRequest {
+  string national_id = 1;
+}
+
+message UserList {
+  repeated User users = 1;
 }
 
 message MessageToUsersRequest {
@@ -31,5 +28,5 @@ message MessageToUsersRequest {
 }
 
 message MessageToUsersReply {
-  string status = 1;
+  string response = 1;
 }

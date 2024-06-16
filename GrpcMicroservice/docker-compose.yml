@@ -7,6 +7,22 @@ services:
       - "5672:5672"
       - "15672:15672"
 
+  notif_db:
+    image: postgres:13
+    container_name: notif_db
+    environment:
+      POSTGRES_DB: notif_db
+      POSTGRES_USER: notif_user
+      POSTGRES_PASSWORD: notif_pass
+    ports:
+      - "5434:5432"
+
+  notif_redis:
+    image: redis:6
+    container_name: notif_redis
+    ports:
+      - "6382:6379"
+
   notif_service:
     ports:
       - "50051:50051"
@@ -17,5 +33,11 @@ services:
       - .:/app
     depends_on:
       - rabbitmq
+      - notif_db
+      - notif_redis
     environment:
       - AMQP_URI=pyamqp://guest:guest@rabbitmq
+      - POSTGRES_DB=notif_db
+      - POSTGRES_USER=notif_user
+      - POSTGRES_PASSWORD=notif_pass
+      - REDIS_HOST=notif_redis

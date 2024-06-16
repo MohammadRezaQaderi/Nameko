@@ -3,3 +3,5 @@ grpcio
 grpcio-tools
 protobuf
 nameko_grpc
+psycopg2-binary==2.9.3
+redis==4.2.2
