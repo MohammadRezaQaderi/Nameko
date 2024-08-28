@@ -39,8 +39,6 @@ Session.vim
 ### vscode
 .vscode
 pre-commit-hook.sh
-TODO
-instructions.txt
 
 .coverage
 htmlcov
